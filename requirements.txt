@@ -1,0 +1,4 @@
+kubernetes
+flask
+boto3
+gunicorn

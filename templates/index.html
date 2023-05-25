@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Input</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Form Input</h1>
+    <form action="{{ url_for('create_redirect') }}" method="post">
+        <label for="name">First Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="url">Zoom Personal Room URL:</label>
+        <input type="url" id="url" name="url" required>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

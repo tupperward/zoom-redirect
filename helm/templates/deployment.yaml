@@ -66,6 +66,13 @@ spec:
                 name: {{ include "helm.fullname" . }}
                 key: namespace
           {{ end }}
+          {{ if .Values.issuerName }}
+          - name: 'ISSUER_NAME'
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "helm.fullname" . }}
+                key: issuerName
+          {{ end }}
           ports:
             - name: http
               containerPort: 8000

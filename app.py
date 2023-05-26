@@ -20,10 +20,10 @@ def is_valid_url(url):
   return all([parsed_url.scheme, parsed_url.netloc, parsed_url.path])
 
 def get_hosted_zone_id(domain_name):
-  client = session_config.client('route53')
+  client = session_config.client(service_name='route53')
 
   try:
-    response = client.list.hosted_zones()
+    response = client.list_hosted_zones()
     app.logger.info('Successfully listed hosted zones.')
   except Exception as err:
     app.logger.error(f'Could not list hosted zones: {err}')
@@ -47,7 +47,7 @@ def create_a_record(subdomain, ip_address, hosted_zone_id):
               {
                   'Action': 'CREATE',
                   'ResourceRecordSet': {
-                      'Name': subdomain,
+                      'Name': f"{subdomain}.{domain_name}",
                       'Type': 'A',
                       'TTL': 1,
                       'ResourceRecords': [
@@ -78,30 +78,41 @@ def create_ingress_resource(name: str, url: str):
   kubernetes.config.load_incluster_config()
 
   with kubernetes.client.ApiClient() as api_client:
-    api_instance = kubernetes.client.ExtensionsV1beta1Api(api_client=api_client)
+    api_instance = kubernetes.client.NetworkingV1Api(api_client=api_client)
 
     if not os.environ.get('K8S_NAMESPACE'):
       namespace = os.environ.get('K8S_NAMESPACE')
     else:
       namespace = 'zoom-redirect'
 
-    if not os.environ.get('CLUSTER_ISSUER'):
-      cluster_issuer = os.environ.get('CLUSTER_ISSUER')
+    if not os.environ.get('ISSUER_NAME'):
+      cluster_issuer = os.environ.get('ISSUER_NAME')
     else: 
       cluster_issuer = 'prod-issuer'
 
-    salty, sweet = random_characters(5)
+    salt= random_characters(5)
 
     metadata = kubernetes.client.V1ObjectMeta(
-      name=f"{name}-redirect-{salty}-{sweet}",
+      name=f"{name}-redirect-{salt}",
       labels={"app":"zoom-redirect"},
       annotations={"nginx.ingress.kubernetes.io/rewrite-target":f"{url}", "cert-manager.io/cluster-issuer": f"{cluster_issuer}"}
+    )
+    port = kubernetes.client.V1ServiceBackendPort(
+      name='redirect-port'
+    )
+    service = kubernetes.client.V1IngressServiceBackend(
+      name=f'{name}-svc',
+      port=port
+    )
+    backend = kubernetes.client.V1IngressBackend(
+      service=service
     )
     tls = kubernetes.client.V1IngressTLS(
       hosts=[f"{name}.{domain_name}"],
       secret_name=f"{name}-redirect-tls"
     )
     path = kubernetes.client.V1HTTPIngressPath(
+      backend=backend,
       path='/',
       path_type='Prefix'
     )
@@ -115,7 +126,8 @@ def create_ingress_resource(name: str, url: str):
     spec = kubernetes.client.V1IngressSpec(
       ingress_class_name='nginx',
       rules=[rule],
-      tls=[tls]
+      tls=[tls],
+      default_backend=backend
     )
     ingress = kubernetes.client.V1Ingress(
       metadata=metadata,

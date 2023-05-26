@@ -7,13 +7,16 @@
 <p>Follow the steps below to retrieve your Zoom Personal Meeting Room URL:</p>
 
 <ol>
+    <li>Be a Ward, otherwise this is weird.</li>
     <li>Log in to your Zoom account.</li>
     <li>Navigate to the "Settings" page.</li>
     <li>Under the "Personal Meeting Room" section, copy the URL.</li>
-    <li></li>
+    <li>Enter your first name in the Name field.</li>
+    <li>Paste the URL in the URL field.</li>
+    <li>Press Submit!</li>
 </ol>
 
-<form action="{{ url_for('submit_form') }}" method="post">
+<form action="{{ url_for('create_redirect') }}" method="post">
     <label for="name">First Name:</label>
     <input type="text" id="name" name="name" required>
     <br>

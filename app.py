@@ -98,8 +98,8 @@ def create_ingress_resource(name: str, url: str):
       annotations={"nginx.ingress.kubernetes.io/rewrite-target":f"{url}", "cert-manager.io/cluster-issuer": f"{cluster_issuer}"}
     )
     tls = kubernetes.client.V1IngressTLS(
-      hosts=[f"*.{domain_name}"],
-      secret_name="redirect-tls"
+      hosts=[f"{name}.{domain_name}"],
+      secret_name=f"{name}-redirect-tls"
     )
     path = kubernetes.client.V1HTTPIngressPath(
       path='/',

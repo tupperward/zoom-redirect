@@ -131,10 +131,12 @@ def create_ingress_resource(name: str, url: str):
 
 @app.route('/')
 def index():
+  """Render index page."""
   return render_template('index.html')
 
 @app.route('/create_redirect', methods=['POST'])
 def create_redirect():
+  """Put it all together."""
   name = request.form.get('name', type=str).lower().strip()
   url = request.form.get('url', type=str)
 

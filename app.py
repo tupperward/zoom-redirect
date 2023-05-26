@@ -8,7 +8,7 @@ app.secret_key = secrets.token_urlsafe(16)
 domain_name = os.environ.get('DOMAIN_NAME')
 ip_address = os.environ.get('IP_ADDRESS')
 
-session = boto3.Session(
+session_config = boto3.Session(
   aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),
   aws_secret_access_key=os.environ.get('AWS_SECRET_KEY'),
   region_name=os.environ.get('AWS_REGION'),
@@ -20,7 +20,7 @@ def is_valid_url(url):
   return all([parsed_url.scheme, parsed_url.netloc, parsed_url.path])
 
 def get_hosted_zone_id(domain_name):
-  client = session.client('route53')
+  client = session_config.client('route53')
 
   try:
     response = client.list.hosted_zones()
@@ -38,7 +38,7 @@ def get_hosted_zone_id(domain_name):
 
 def create_a_record(subdomain, ip_address, hosted_zone_id):
   
-  client = session.client('route53')
+  client = session_config.client('route53')
   try:
     response = client.change_resource_record_sets(
       HostedZoneId=hosted_zone_id,

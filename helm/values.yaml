@@ -5,7 +5,7 @@
 replicaCount: 1
 
 namespace: zoom-redirect 
-
+domainName: example.net
 aws:
   access_key: ""
   secret_key: ""
@@ -23,7 +23,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -61,7 +61,7 @@ ingress:
   tls:
   - secretName: redirect-tls
     hosts:
-      - "*.example.net"
+      - example.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

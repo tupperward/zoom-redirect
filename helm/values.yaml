@@ -6,6 +6,8 @@ replicaCount: 1
 
 namespace: zoom-redirect 
 domainName: example.net
+issuerName: ""
+ip_address: ""
 aws:
   access_key: ""
   secret_key: ""

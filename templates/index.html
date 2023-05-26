@@ -1,19 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Form Input</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Form Input</h1>
-    <form action="{{ url_for('create_redirect') }}" method="post">
-        <label for="name">First Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br>
-        <label for="url">Zoom Personal Room URL:</label>
-        <input type="url" id="url" name="url" required>
-        <br>
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Form Input{% endblock %}
+
+{% block content %}
+<h1>Form Input</h1>
+<p>Follow the steps below to retrieve your Zoom Personal Meeting Room URL:</p>
+
+<ol>
+    <li>Log in to your Zoom account.</li>
+    <li>Navigate to the "Settings" page.</li>
+    <li>Under the "Personal Meeting Room" section, copy the URL.</li>
+    <li></li>
+</ol>
+
+<form action="{{ url_for('submit_form') }}" method="post">
+    <label for="name">First Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+    <label for="url">Zoom Personal Room URL:</label>
+    <input type="url" id="url" name="url" required>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

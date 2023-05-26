@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, session, redirect
 from urllib.parse import urlparse
 import kubernetes.client, kubernetes.config 
 import secrets, random, string, boto3, os
@@ -140,16 +140,26 @@ def create_redirect():
   name = request.form.get('name', type=str).lower().strip()
   url = request.form.get('url', type=str)
 
+  session['name'] = name
+
   if not is_valid_url(url):
-    app.logger(f"Infalid URL: {url}")
-    return render_template('failure.html')
+    app.logger(f"Invalid URL: {url}")
+    error = "Proided URL did not pass URL validation."
+    return render_template('failure.html', error=error)
 
   hosted_zone_id = get_hosted_zone_id(domain_name=domain_name)
 
   create_a_record(subdomain=name, ip_address=ip_address, hosted_zone_id=hosted_zone_id)
   create_ingress_resource(name=name, url=url)
 
-  return render_template('success.html')
+  return redirect(url_for('success'))
+
+@app.route('/success')
+def success():
+  """Render success page."""
+  name = session.get('name')
+  complete_url = f"{name}.{domain_name}"
+  return render_template('success.html', complete_url=complete_url)
 
 if __name__ == "__main__":
   app.run()
